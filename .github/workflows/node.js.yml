@@ -21,13 +21,13 @@ jobs:
       - name: run npm install and build
         run: npm install
         
-      - run: npm build
+      - run: npm run build
       
       # Esta sería la forma "correcta" de definir un step que hace varias cosas en UN run multilinea
       - name: (2) run npm install and build
         run: |
           npm install
-          npm build
+          npm run build
 
       # Sube archivos generados en este job (de su VM)
       - uses: actions/upload-artifact@master
@@ -63,7 +63,7 @@ jobs:
 
     # npm ci es equivalente a "npm install" solo que no actualiza el package-lock y necesita si o si ese file o explota
     - run: npm install
-      name: npm install
+      name: npm install name
       
       # Nos faltaría el "npm build", esto es para demostrar que los jobs se ejecutan en VM separadas
       
