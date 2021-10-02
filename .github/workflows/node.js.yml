@@ -28,10 +28,17 @@ jobs:
         run: |
           npm install
           npm build
+
+      # Sube archivos generados en este job (de su VM)
+      - uses: actions/upload-artifact@master
+        with:
+            name: webpack artifacts
+            path: public/
       
     
   tests:
     runs-on: ubuntu-latest
+    needs: [build]
 
     strategy:
       matrix:
@@ -40,12 +47,20 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+    # Descarga archivos generados en este job (de su VM)
+    - uses: actions/download-artifact@master
+      with:
+        name: webpack artifacts
+        path: public
+
     - uses: actions/checkout@v2
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
     # npm ci es equivalente a "npm install" solo que no actualiza el package-lock y necesita si o si ese file o explota
     - run: npm install
       name: npm install
@@ -53,4 +68,4 @@ jobs:
       # Nos faltaría el "npm build", esto es para demostrar que los jobs se ejecutan en VM separadas
       
     - run: npm test
-      name: npm test
+      name: npm test name
