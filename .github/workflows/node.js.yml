@@ -11,7 +11,26 @@ on:
 
 jobs:
   build:
-
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Cada "-" sería un step...
+      - uses: actions/checkout@v2
+        name: actions checkout exectution
+      
+      - name: run npm install and build
+        run: npm install
+        
+      - run: npm build
+      
+      # Esta sería la forma "correcta" de definir un step que hace varias cosas en UN run multilinea
+      - name: (2) run npm install and build
+        run: |
+          npm install
+          npm build
+      
+    
+  tests:
     runs-on: ubuntu-latest
 
     strategy:
@@ -27,6 +46,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
+    # npm ci es equivalente a "npm install" solo que no actualiza el package-lock y necesita si o si ese file o explota
+    - run: npm install
+      name: npm install
+      
+      # Nos faltaría el "npm build", esto es para demostrar que los jobs se ejecutan en VM separadas
+      
     - run: npm test
+      name: npm test
