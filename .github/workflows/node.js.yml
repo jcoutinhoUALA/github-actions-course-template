@@ -62,10 +62,10 @@ jobs:
         cache: 'npm'
 
     # npm ci es equivalente a "npm install" solo que no actualiza el package-lock y necesita si o si ese file o explota
-    - run: npm install
-      name: npm install name
-      
-      # Nos faltaría el "npm build", esto es para demostrar que los jobs se ejecutan en VM separadas
-      
-    - run: npm test
-      name: npm test name
+    - name: npm install & test
+      run: |
+        npm install
+        npm test
+      # ¿Para qué es ésto?. Pareciera que sacándolo no se comparten los artifacts (?
+      env:
+        CI: true
