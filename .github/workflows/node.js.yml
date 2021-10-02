@@ -11,21 +11,57 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    
+    steps:
+      # Cada "-" sería un step...
+      - uses: actions/checkout@v2
+        name: actions checkout exectution
+      
+      # Esta sería la forma "correcta" de definir un step que hace varias cosas en UN run multilinea
+      - name: (2) run npm install and build
+        run: |
+          npm install
+          npm run build
+
+      # Sube archivos generados en este job (de su VM)
+      - uses: actions/upload-artifact@master
+        with:
+            name: webpack artifacts
+            path: public/
+      
+    
+  tests:
+    runs-on: ubuntu-latest
+    needs: [build]
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        os: [windows-2016, ubuntu-20.04]
+        node-version: [10.x, 12.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v2
+
+    # Descarga archivos generados en este job (de su VM)
+    # Pareciera ser que el orden afecta a la descarga del artifact. Primero necesita hacer checkout. OJO
+    - uses: actions/download-artifact@master
+      with:
+        name: webpack artifacts
+        path: public
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+
+    # npm ci es equivalente a "npm install" solo que no actualiza el package-lock y necesita si o si ese file o explota
+    - name: npm install & test
+      run: |
+        npm install
+        npm test
+      # ¿Para qué es ésto del environment CI:true?
+      env:
+        CI: true
