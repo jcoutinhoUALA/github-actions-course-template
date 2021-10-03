@@ -1,0 +1,17 @@
+name: team approval workflow
+
+on: pull_request_review
+
+jobs:
+  # Nombre del job actual que vamos a agregar
+  labelWhenApproved:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Label approved pull requests
+      # Consultado desde el marketplace de Github con su snippet
+      uses: abinoda/label-when-approved-action@1.0.5
+      env:
+        APPROVALS: "1"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ADD_LABEL: "approved"
